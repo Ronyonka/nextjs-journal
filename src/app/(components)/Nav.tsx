@@ -1,7 +1,10 @@
 import Link from "next/link"
+import { getServerSession } from "next-auth";
+import { options } from "../api/auth/[...nextauth]/options";
 
-const Nav = () => {
-  return (
+const Nav = async () => {
+    const session = await getServerSession(options);
+    return (
     <div>
         <header className="bg-gray-600 text-gray-100">
             <nav className="flex justify-between items-center w-full px-10 py-4">
@@ -14,11 +17,12 @@ const Nav = () => {
                     <Link href="/ClientProfile">Client Profile</Link>
                     <Link href="/Profile">Profile</Link>
                     <Link href="/Public">Public</Link>
+                    { session ? <Link href="/api/auth/signout?callackUrl=/">Logout</Link> : <Link href="/api/auth/signin">Login</Link> }
                 </div>
             </nav>
         </header>
     </div>
-  )
+    )
 }
 
 export default Nav
