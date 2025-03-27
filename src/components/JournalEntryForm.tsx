@@ -12,13 +12,34 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { createJournalEntry } from "@/actions/journal";
+import { getCategories } from "@/actions/categories";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
+function formatCategoryDisplay(name: string): string {
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
 
 export function JournalEntryForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
+  const [newCategory, setNewCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadCategories() {
+      const result = await getCategories();
+      if ("data" in result) {
+        setCategories(result.data);
+      }
+      setIsLoading(false);
+    }
+    loadCategories();
+  }, []);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -26,22 +47,33 @@ export function JournalEntryForm() {
 
     const formData = new FormData(e.currentTarget);
     const title = formData.get("title") as string;
-    const category = formData.get("category") as string;
     const content = formData.get("content") as string;
+    const category = showNewCategoryInput ? newCategory : selectedCategory;
 
-    const { error } = await createJournalEntry(title, category, content);
+    const result = await createJournalEntry(title, category, content);
 
-    if (error) {
+    if ("errorMessage" in result) {
       toast.error("Failed to create journal entry", {
-        description: error,
+        description: result.errorMessage,
       });
     } else {
       toast.success("Journal entry created successfully");
-      router.push("/dashboard");
+      router.push("/");
     }
 
     setIsSubmitting(false);
   }
+
+  const handleCategoryChange = (value: string) => {
+    if (value === "new") {
+      setShowNewCategoryInput(true);
+      setSelectedCategory("");
+    } else {
+      setShowNewCategoryInput(false);
+      setSelectedCategory(value);
+      setNewCategory("");
+    }
+  };
 
   return (
     <form onSubmit={onSubmit} className="space-y-8">
@@ -57,16 +89,47 @@ export function JournalEntryForm() {
 
       <div className="space-y-2">
         <Label htmlFor="category">Category</Label>
-        <Select name="category" required>
-          <SelectTrigger>
-            <SelectValue placeholder="Select a category" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="personal">Personal</SelectItem>
-            <SelectItem value="work">Work</SelectItem>
-            <SelectItem value="travel">Travel</SelectItem>
-          </SelectContent>
-        </Select>
+        {showNewCategoryInput ? (
+          <div className="flex gap-2">
+            <Input
+              id="new-category"
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+              placeholder="Enter new category name"
+              required
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setShowNewCategoryInput(false);
+                setNewCategory("");
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
+        ) : (
+          <Select
+            name="category"
+            required
+            value={selectedCategory}
+            onValueChange={handleCategoryChange}
+            disabled={isLoading}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={isLoading ? "Loading categories..." : "Select a category"} />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((category) => (
+                <SelectItem key={category.id} value={category.name}>
+                  {formatCategoryDisplay(category.name)}
+                </SelectItem>
+              ))}
+              <SelectItem value="new">+ Add New Category</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
       </div>
 
       <div className="space-y-2">
