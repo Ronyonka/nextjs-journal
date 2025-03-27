@@ -28,7 +28,6 @@ export async function createClient() {
 
 export async function getUser() {
   const { auth } = await createClient();
-
   const userObject = await auth.getUser();
 
   if (userObject.error) {
@@ -36,5 +35,10 @@ export async function getUser() {
     return null;
   }
 
-  return userObject.data.user;
+  const user = await prisma.user.findUnique({
+    where: { id: userObject.data.user.id },
+    select: { id: true, email: true, name: true },
+  });
+
+  return user;
 }
