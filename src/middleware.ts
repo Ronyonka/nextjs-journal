@@ -1,47 +1,27 @@
-import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import { createClient } from "@/auth/server";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  return await updateSession(request);
+  const { auth } = await createClient();
+
+  const {
+    data: { session },
+  } = await auth.getSession();
+
+  // If the user is not logged in and trying to access protected routes
+  if (!session && request.nextUrl.pathname.startsWith("/dashboard")) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  // If the user is logged in and trying to access auth routes
+  if (session && (request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/sign-up")) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-  ],
+  matcher: ["/dashboard/:path*", "/login", "/sign-up"],
 };
-
-export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  });
-
-  //   const supabase = createServerClient(
-  //     process.env.SUPABASE_URL!,
-  //     process.env.SUPABASE_ANON_KEY!,
-  //     {
-  //       cookies: {
-  //         getAll() {
-  //           return request.cookies.getAll();
-  //         },
-  //         setAll(cookiesToSet) {
-  //           cookiesToSet.forEach(({ name, value }) =>
-  //             request.cookies.set(name, value),
-  //           );
-  //           supabaseResponse = NextResponse.next({
-  //             request,
-  //           });
-  //           cookiesToSet.forEach(({ name, value, options }) =>
-  //             supabaseResponse.cookies.set(name, value, options),
-  //           );
-  //         },
-  //       },
-  //     },
-  //   );
-
-  //   const {
-  //     data: { user },
-  //   } = await supabase.auth.getUser();
-
-  return supabaseResponse;
-}
