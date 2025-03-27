@@ -26,6 +26,7 @@ function AuthForm({ type }: Props) {
     startTransition(async () => {
       const email = formData.get("email") as string;
       const password = formData.get("password") as string;
+      const name = formData.get("name") as string;
 
       let errorMessage;
       let title;
@@ -36,7 +37,7 @@ function AuthForm({ type }: Props) {
           description: "You have been sucessfully logged in",
         });
       } else {
-        errorMessage = (await signUpAction(email, password)).errorMessage;
+        errorMessage = (await signUpAction(email, password, name)).errorMessage;
         toast.success("Signed Up", {
           description: "Check your email for the confirmation link.",
         });
@@ -66,6 +67,20 @@ function AuthForm({ type }: Props) {
             disabled={isPending}
           />
         </div>
+        {!isLoginForm && (
+          <div className="flex flex-col space-y-1.5">
+            <Label htmlFor="name">First Name</Label>
+            <Input
+              id="name"
+              name="name"
+              placeholder="Enter your first name"
+              type="text"
+              required
+              disabled={isPending}
+            />
+          </div>
+        )}
+
         <div className="flex flex-col space-y-1.5">
           <Label htmlFor="password">Password</Label>
           <Input

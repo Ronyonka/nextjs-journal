@@ -6,7 +6,11 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "migrate": "npx prisma generate && env $(cat .env.local | xargs) npx prisma migrate dev"
+  },
+  "prisma": {
+    "schema": "src/db/schema.prisma"
   },
   "dependencies": {
     "@prisma/client": "^6.5.0",
@@ -36,6 +40,7 @@
     "eslint-config-next": "15.2.3",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
+    "prisma": "^6.5.0",
     "tailwindcss": "^4.0.17",
     "typescript": "^5"
   }
