@@ -26,13 +26,15 @@ function Header() {
         </h1>
       </Link>
 
-      <div className="gap -4 flex">
+      <div className="flex gap-4">
         {user ? (
           <LogoutButton />
         ) : (
           <>
-            <Button asChild className="hidden sm:block">
-              <Link href="/sign-up">Sign Up</Link>
+            <Button asChild>
+              <Link href="/sign-up" className="hidden sm:block">
+                Sign Up
+              </Link>
             </Button>
             <Button asChild variant="outline">
               <Link href="/login">Login</Link>
