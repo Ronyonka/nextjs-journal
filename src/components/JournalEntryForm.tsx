@@ -21,14 +21,26 @@ function formatCategoryDisplay(name: string): string {
   return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
-export function JournalEntryForm() {
+export function JournalEntryForm({
+  initialData,
+  onSave,
+  onCancel,
+}: {
+  initialData: { title: string; content: string };
+  onSave: (data: { title: string; content: string }) => void;
+  onCancel: () => void;
+}) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
   const [newCategory, setNewCategory] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+    [],
+  );
   const [isLoading, setIsLoading] = useState(true);
+  const [title, setTitle] = useState(initialData.title);
+  const [content, setContent] = useState(initialData.content);
 
   useEffect(() => {
     async function loadCategories() {
@@ -75,8 +87,13 @@ export function JournalEntryForm() {
     }
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave({ title, content });
+  };
+
   return (
-    <form onSubmit={onSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} className="space-y-8">
       <div className="space-y-2">
         <Label htmlFor="title">Title</Label>
         <Input
@@ -84,6 +101,8 @@ export function JournalEntryForm() {
           name="title"
           placeholder="Enter your journal entry title"
           required
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
         />
       </div>
 
@@ -118,7 +137,11 @@ export function JournalEntryForm() {
             disabled={isLoading}
           >
             <SelectTrigger>
-              <SelectValue placeholder={isLoading ? "Loading categories..." : "Select a category"} />
+              <SelectValue
+                placeholder={
+                  isLoading ? "Loading categories..." : "Select a category"
+                }
+              />
             </SelectTrigger>
             <SelectContent>
               {categories.map((category) => (
@@ -140,12 +163,19 @@ export function JournalEntryForm() {
           placeholder="Write your journal entry here..."
           className="min-h-[200px]"
           required
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
         />
       </div>
 
       <Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? "Creating..." : "Create Entry"}
       </Button>
+      <Button type="button" onClick={onCancel}>
+        Cancel
+      </Button>
     </form>
   );
 }
+
+export default JournalEntryForm;
