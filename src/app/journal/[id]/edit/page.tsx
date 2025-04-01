@@ -1,7 +1,7 @@
-import { getUser } from "@/auth/server";
 import { prisma } from "@/db/prisma";
 import { JournalEntryEditForm } from "@/components/JournalEntryEditForm";
 import { redirect } from "next/navigation";
+import { getUser } from "@/auth/server";
 
 export default async function EditJournalEntryPage({
   params,
@@ -9,12 +9,14 @@ export default async function EditJournalEntryPage({
   params: { id: string };
 }) {
   const user = await getUser();
-  if (!user) redirect("/login");
+  if (!user) {
+    redirect("/login");
+  }
 
   const entry = await prisma.journalEntry.findUnique({
     where: {
       id: params.id,
-      userId: user.id, // Ensure user can only edit their own entries
+      userId: user.id, // Ensure the entry belongs to the logged-in user
     },
     include: {
       categories: {
