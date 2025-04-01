@@ -29,8 +29,6 @@ function AuthForm({ type }: Props) {
       const name = formData.get("name") as string;
 
       let errorMessage;
-      let title;
-      let description;
       if (isLoginForm) {
         errorMessage = (await loginAction(email, password)).errorMessage;
         toast.success("Logged In", {

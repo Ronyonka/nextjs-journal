@@ -9,6 +9,7 @@ type Props = {
 };
 
 async function Homepage({ searchParams }: Props) {
+  void searchParams;
   const user = await getUser();
 
   if (!user) {

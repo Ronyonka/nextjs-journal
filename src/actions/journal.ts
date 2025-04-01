@@ -138,7 +138,7 @@ export const editJournalEntry = async (
       throw new Error("Entry not found or unauthorized");
     }
 
-    const updateData: any = {
+    const updateData: unknown = {
       title,
       content,
       updatedAt: new Date(),
