@@ -1,11 +1,11 @@
 import { Suspense } from "react";
 import JournalEntryServer from "./JournalEntryServer";
 
-export default function JournalEntryPage({
-  params,
-}: {
+interface PageProps {
   params: { id: string };
-}) {
+}
+
+export default function JournalEntryPage({ params }: PageProps) {
   return (
     <Suspense
       fallback={
