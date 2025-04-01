@@ -5,6 +5,7 @@ import { prisma } from "@/db/prisma";
 import { JournalEntries } from "@/components/JournalEntries";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import JournalEntryCard from "@/components/JournalEntryCard";
 
 type Props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -21,6 +22,18 @@ async function Homepage({ searchParams }: Props) {
   const journalEntry = await prisma.journalEntry.findUnique({
     where: { id: journalEntryId, userId: user?.id },
   });
+
+  const entries = await prisma.journalEntry.findMany({
+    include: {
+      categories: {
+        select: { name: true },
+      },
+    },
+    orderBy: {
+      date: "desc",
+    },
+  });
+
   return (
     <div className="container mx-auto py-8">
       <div className="mb-8 flex items-center justify-between">
@@ -29,7 +42,12 @@ async function Homepage({ searchParams }: Props) {
           <Link href="/journal/new">New Entry</Link>
         </Button>
       </div>
-      <JournalEntries />
+
+      <div className="grid gap-6 p-6 md:grid-cols-2 lg:grid-cols-3">
+        {entries.map((entry) => (
+          <JournalEntryCard key={entry.id} entry={entry} />
+        ))}
+      </div>
     </div>
   );
 }

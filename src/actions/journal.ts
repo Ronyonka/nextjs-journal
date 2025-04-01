@@ -11,7 +11,9 @@ function formatCategoryName(name: string): string {
 export const getUserJournalEntries = async () => {
   try {
     const { auth } = await createClient();
-    const { data: { user } } = await auth.getUser();
+    const {
+      data: { user },
+    } = await auth.getUser();
 
     if (!user) {
       throw new Error("User not authenticated");
@@ -25,7 +27,7 @@ export const getUserJournalEntries = async () => {
         categories: true,
       },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
     });
 
@@ -84,4 +86,26 @@ export const createJournalEntry = async (
   } catch (error) {
     return handleError(error);
   }
-}; 
+};
+
+export async function deleteJournalEntry(id: string) {
+  try {
+    const { auth } = await createClient();
+    const {
+      data: { user },
+    } = await auth.getUser();
+
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
+
+    await prisma.journalEntry.delete({
+      where: { id },
+    });
+
+    return { data: "Journal entry deleted successfully", error: null };
+  } catch (error) {
+    console.error("Error deleting entry:", error);
+    return { data: null, error: "Failed to delete journal entry" };
+  }
+}

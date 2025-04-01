@@ -6,7 +6,7 @@ type Props = {
   journalEntries: JournalEntry[];
 };
 function SidebarGroupContent({ journalEntries }: Props) {
-  console.log(journalEntries);
+  // console.log(journalEntries);
   return <div>Your Journal Entries Here</div>;
 }
 
