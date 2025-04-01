@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import JournalEntryServer from "./JournalEntryServer";
 
-export default async function JournalEntryPage({
+export default function JournalEntryPage({
   params,
 }: {
   params: { id: string };
