@@ -62,7 +62,9 @@ export default async function JournalEntryServer({ id }: { id: string }) {
           </p>
           <p className="mt-4">{entry.content}</p>
           <div className="mt-6 flex space-x-4">
-            <Button variant="default">Edit</Button>
+            <Button asChild variant="outline">
+              <Link href={`/journal/${entry.id}/edit`}>Edit Entry</Link>
+            </Button>
             <DeleteEntryButton id={id} />
           </div>
         </CardContent>

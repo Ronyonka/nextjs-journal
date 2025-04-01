@@ -12,3 +12,18 @@ export const handleError = (error: unknown) => {
     return { errorMessage: "An error occurred" };
   }
 };
+
+export async function withRetry<T>(
+  operation: () => Promise<T>,
+  retries = 3,
+): Promise<T> {
+  try {
+    return await operation();
+  } catch (error) {
+    if (retries > 0 && error.message.includes("database")) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return withRetry(operation, retries - 1);
+    }
+    throw error;
+  }
+}

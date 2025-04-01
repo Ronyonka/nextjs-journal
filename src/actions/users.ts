@@ -50,14 +50,16 @@ export const signUpAction = async (
     const userId = data.user?.id;
     if (!userId) throw new Error("No user ID returned");
 
-    // Create user profile
-    await prisma.user.create({
-      data: {
-        id: userId,
-        name,
-        email,
-      },
-    });
+    // Create user profile with retry
+    await withRetry(() =>
+      prisma.user.create({
+        data: {
+          id: userId,
+          name,
+          email,
+        },
+      }),
+    );
 
     // Automatically log in the user after successful registration
     const { error: loginError } = await auth.signInWithPassword({

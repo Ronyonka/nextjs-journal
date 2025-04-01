@@ -15,7 +15,11 @@ export async function middleware(request: NextRequest) {
   }
 
   // If the user is logged in and trying to access auth routes
-  if (session && (request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/sign-up")) {
+  if (
+    session &&
+    (request.nextUrl.pathname === "/login" ||
+      request.nextUrl.pathname === "/sign-up")
+  ) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 

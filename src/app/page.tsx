@@ -1,8 +1,5 @@
 import { getUser } from "@/auth/server";
-import AskAIButton from "@/components/AskAIButton";
-import NewEntryButton from "@/components/NewEntryButton";
 import { prisma } from "@/db/prisma";
-import { JournalEntries } from "@/components/JournalEntries";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import JournalEntryCard from "@/components/JournalEntryCard";
@@ -12,18 +9,31 @@ type Props = {
 };
 
 async function Homepage({ searchParams }: Props) {
-  const entryIdParam = (await searchParams).journalEntryId;
   const user = await getUser();
 
-  const journalEntryId = Array.isArray(entryIdParam)
-    ? entryIdParam[0]
-    : entryIdParam || "";
-
-  const journalEntry = await prisma.journalEntry.findUnique({
-    where: { id: journalEntryId, userId: user?.id },
-  });
+  if (!user) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4">
+        <h1 className="text-2xl font-bold">Welcome to Journal</h1>
+        <p className="text-muted-foreground">
+          Please login or sign up to continue
+        </p>
+        <div className="flex gap-4">
+          <Button asChild>
+            <Link href="/login">Login</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/sign-up">Sign Up</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   const entries = await prisma.journalEntry.findMany({
+    where: {
+      userId: user.id,
+    },
     include: {
       categories: {
         select: { name: true },
@@ -33,6 +43,20 @@ async function Homepage({ searchParams }: Props) {
       date: "desc",
     },
   });
+
+  if (entries.length === 0) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4">
+        <h1 className="text-2xl font-bold">No journal entries yet</h1>
+        <p className="text-muted-foreground">
+          Start your journaling journey by creating your first entry
+        </p>
+        <Button asChild>
+          <Link href="/journal/new">Create your first entry</Link>
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-8">
