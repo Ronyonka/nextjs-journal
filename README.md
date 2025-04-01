@@ -1,36 +1,117 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js Journal
 
-## Getting Started
+A journaling application built with Next.js, Prisma, and Supabase. This app allows users to create, edit, and manage journal entries with a clean and responsive UI.
 
-First, run the development server:
+## Features
+
+- User authentication with Supabase
+- Create, edit, and delete journal entries
+- Dark mode support
+- Sidebar navigation with icons
+- Profile, Dashboard, and Settings pages
+
+---
+
+## Installation and Setup
+
+### Prerequisites
+
+Ensure you have the following installed on your system:
+
+- [Node.js](https://nodejs.org/) (v16 or later)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+- [PostgreSQL](https://www.postgresql.org/) (for the database)
+- [Supabase](https://supabase.com/) account (for authentication and database management)
+
+---
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/your-username/nextjs-journal.git
+cd nextjs-journal
+```
+
+### 2. Install Dependencies
+
+Install the required dependencies using npm or yarn:
+
+```bash
+npm install
+# or
+yarn install
+```
+
+### 3. Configure Supabase
+
+1. Create a project on [Subabase](https://supabase.com/)
+2. Go to **Settings > API** section in your Supabase dashboard and copy the `Project URL` and `Anon Key`.
+3. Enable authentication by setting up providers (e.g, email/password) in the **Authentication** section.
+
+### 4. Configure Environment Variables
+
+Create a .env.local file in the root of the project and add the following environment variables:
+
+```
+DATABASE_URL=your_postgresql_database_url
+DIRECT_URL=your_postgresql_direct_url
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+Replace the placeholders with your actual credentials:
+
+- `DATABASE_URL`:Your PostgreSQL connection using string (e.g `postgres://username:password@host:port/database`)
+- `DIRECT URL`: Optional direct connection URL for Prisma.
+- `NEXT_PUBLIC_SUPABASE_URL` : Your Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase `anon` key.
+
+### 5. Set Up Prisma
+
+1. Initialize Prisma:
+
+```bash
+npx prisma init
+```
+
+2. Update the `prisma/schema.prisma` file with your database schema. The project already includes a schema for `User`, `JournalEntry`, `Category`, and `Summary`.
+3. Generate the Prisma client:
+
+```bash
+npx prisma generate
+```
+
+4. Apply the database migrations:
+
+```bash
+npx prisma migrate dev
+```
+
+### 6. Run the Development Server
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app will be available at http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Scripts
 
-## Learn More
+- `npm run dev`: Start the development server
+- `npm run build`: Build the application for production
+- `npm run start`: Start the production server
+- `npm prisma studio`: Open Prisma Studio to manage the database
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Technologies Used
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Next.js Documentation](https://nextjs.org/docs): React framework for server-side rendering and static site generation
+- [Prisma Documentation](https://www.prisma.io/docs): ORM for database management
+- [Supabase Documentation](https://supabase.com/docs): Authentication and database management
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs): Utility-first CSS framework
+- [Shadcn Documentation](https://ui.shadcn.com/docs): Pre-built UI components for Tailwind CSS
