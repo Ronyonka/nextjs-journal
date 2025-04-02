@@ -2,13 +2,15 @@
 
 A journaling application built with Next.js, Prisma, and Supabase. This app allows users to create, edit, and manage journal entries with a clean and responsive UI.
 
-## Features
+## Key Features
 
-- User authentication with Supabase
-- Create, edit, and delete journal entries
-- Dark mode support
-- Sidebar navigation with icons
-- Profile, Dashboard, and Settings pages
+- **User Authentication**: Secure login and signup powered by Supabase.
+- **Journal Management**: Create, edit, and delete journal entries with ease.
+- **Dark Mode**: A visually appealing dark mode for comfortable use at night.
+- **Category Organization**: Categorize your entries for better organization.
+- **Responsive Design**: Fully optimized for desktop and mobile devices.
+
+For a detailed overview of the system's architecture, workflows, and components, please refer to the **[System Design Document](./SYSTEM_DESIGN.md)**.
 
 ---
 
