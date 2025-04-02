@@ -26,6 +26,7 @@ async function AppSidebar() {
       },
     });
   }
+
   return (
     <Sidebar>
       <SidebarHeader>

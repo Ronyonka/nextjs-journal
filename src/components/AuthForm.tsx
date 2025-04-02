@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { CardContent, CardFooter } from "./ui/card";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
-import { useTransition } from "react";
+import { useTransition, useState } from "react";
 import { Button } from "./ui/button";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -17,42 +17,48 @@ type Props = {
 
 function AuthForm({ type }: Props) {
   const isLoginForm = type === "login";
-
   const router = useRouter();
-
   const [isPending, startTransition] = useTransition();
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (formData: FormData) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // Prevent the default form submission behavior
+    setLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const name = formData.get("name") as string;
+
     startTransition(async () => {
-      const email = formData.get("email") as string;
-      const password = formData.get("password") as string;
-      const name = formData.get("name") as string;
-
-      let errorMessage;
       if (isLoginForm) {
-        errorMessage = (await loginAction(email, password)).errorMessage;
-        toast.success("Logged In", {
-          description: "You have been sucessfully logged in",
-        });
+        const { errorMessage } = await loginAction(email, password);
+        if (errorMessage) {
+          toast.error("Error", { description: errorMessage });
+        } else {
+          toast.success("Logged In", {
+            description: "You have been successfully logged in",
+          });
+          router.replace("/");
+        }
       } else {
-        errorMessage = (await signUpAction(email, password, name)).errorMessage;
-        toast.success("Signed Up", {
-          description: "Check your email for the confirmation link.",
-        });
-      }
-
-      if (!errorMessage) {
-        router.replace(`/?toastType=${type}`);
-      } else {
-        toast.error("Error", {
-          description: errorMessage,
-        });
+        const result = await signUpAction(email, password, name);
+        if (result.errorMessage) {
+          toast.error("Error", { description: result.errorMessage });
+        } else {
+          toast.success("Signed Up", {
+            description: "Check your email for the confirmation link.",
+          });
+          router.push(result.redirectTo); // Redirect to the signup confirmation page
+        }
       }
     });
+
+    setLoading(false);
   };
 
   return (
-    <form action={handleSubmit}>
+    <form onSubmit={handleSubmit}>
       <CardContent className="grid w-full items-center gap-4">
         <div className="flex flex-col space-y-1.5">
           <Label htmlFor="email">Email</Label>
@@ -78,7 +84,6 @@ function AuthForm({ type }: Props) {
             />
           </div>
         )}
-
         <div className="flex flex-col space-y-1.5">
           <Label htmlFor="password">Password</Label>
           <Input
@@ -92,8 +97,8 @@ function AuthForm({ type }: Props) {
         </div>
       </CardContent>
       <CardFooter className="mt-4 flex flex-col gap-6">
-        <Button className="w-full">
-          {isPending ? (
+        <Button className="w-full" disabled={loading}>
+          {loading ? (
             <Loader2 className="animate-spin" />
           ) : isLoginForm ? (
             "Login"
@@ -107,7 +112,9 @@ function AuthForm({ type }: Props) {
             : "Already have an account?"}{" "}
           <Link
             href={isLoginForm ? "/sign-up" : "/login"}
-            className={`text-blue-500 underline ${isPending ? "pointer-events-none opacity-50" : ""}`}
+            className={`text-blue-500 underline ${
+              isPending ? "pointer-events-none opacity-50" : ""
+            }`}
           >
             {isLoginForm ? "Sign Up" : "Login"}
           </Link>

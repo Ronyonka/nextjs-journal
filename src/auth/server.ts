@@ -1,5 +1,5 @@
-// import { prisma } from "@/db/prisma";
 import { createServerClient } from "@supabase/ssr";
+import { prisma } from "@/db/prisma";
 import { cookies } from "next/headers";
 
 export async function createClient() {
@@ -42,8 +42,13 @@ export async function getUser() {
     },
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data, error } = await supabase.auth.getUser();
+  if (error || !data.user) return null;
+
+  // Fetch the user from your database to include the `name` field
+  const user = await prisma.user.findUnique({
+    where: { id: data.user.id },
+  });
+
   return user;
 }

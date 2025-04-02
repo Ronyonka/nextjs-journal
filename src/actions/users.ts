@@ -3,6 +3,7 @@
 import { createClient } from "@/auth/server";
 import { prisma } from "@/db/prisma";
 import { handleError } from "@/lib/utils";
+import { withRetry } from "@/lib/withRetry";
 
 export const loginAction = async (email: string, password: string) => {
   try {
@@ -44,31 +45,26 @@ export const signUpAction = async (
     const { data, error } = await auth.signUp({
       email,
       password,
+      options: {
+        data: { name }, // Save the name in Supabase's user metadata
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/login`,
+      },
     });
     if (error) throw error;
 
     const userId = data.user?.id;
     if (!userId) throw new Error("No user ID returned");
 
-    // Create user profile with retry
-    await withRetry(() =>
-      prisma.user.create({
-        data: {
-          id: userId,
-          name,
-          email,
-        },
-      }),
-    );
-
-    // Automatically log in the user after successful registration
-    const { error: loginError } = await auth.signInWithPassword({
-      email,
-      password,
+    // Save the user in your database
+    await prisma.user.create({
+      data: {
+        id: userId,
+        name,
+        email,
+      },
     });
-    if (loginError) throw loginError;
 
-    return { errorMessage: null };
+    return { redirectTo: "/signup-confirmation" };
   } catch (error) {
     return handleError(error);
   }

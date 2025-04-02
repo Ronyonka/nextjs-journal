@@ -32,3 +32,24 @@ export async function logout() {
     throw new Error("Failed to logout");
   }
 }
+
+export async function signup(email: string, password: string) {
+  const supabase = createClient();
+
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "https://your-deployed-url.vercel.app"}/login`,
+    },
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return {
+    success: true,
+    message: "Please check your email to confirm your account.",
+  };
+}
