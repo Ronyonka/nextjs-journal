@@ -28,18 +28,22 @@ export async function createClient() {
 }
 
 export async function getUser() {
-  const { auth } = await createClient();
-  const userObject = await auth.getUser();
+  const cookieStore = cookies();
 
-  if (userObject.error) {
-    console.error(userObject.error);
-    return null;
-  }
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name) {
+          return cookieStore.get(name)?.value;
+        },
+      },
+    },
+  );
 
-  const user = await prisma.user.findUnique({
-    where: { id: userObject.data.user.id },
-    select: { id: true, email: true, name: true },
-  });
-
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   return user;
 }
