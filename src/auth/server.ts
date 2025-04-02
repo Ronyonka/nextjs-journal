@@ -1,4 +1,4 @@
-import { prisma } from "@/db/prisma";
+// import { prisma } from "@/db/prisma";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
