@@ -3,11 +3,11 @@ import { JournalEntryEditForm } from "@/components/JournalEntryEditForm";
 import { redirect } from "next/navigation";
 import { getUser } from "@/auth/server";
 
-export default async function EditJournalEntryPage({
-  params,
-}: {
+interface PageProps {
   params: { id: string };
-}) {
+}
+
+export default async function EditJournalEntryPage({ params }: PageProps) {
   const user = await getUser();
   if (!user) {
     redirect("/login");
