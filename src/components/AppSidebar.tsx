@@ -32,7 +32,7 @@ async function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel className="mt-2 mb-2 text-lg">
             {user ? (
-              `${user.name ?? user.email}'s Journal`
+              `${user.name}'s Journal`
             ) : (
               <p>
                 <Link href="/login" className="font-semibold">
