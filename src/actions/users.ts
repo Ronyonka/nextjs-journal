@@ -3,7 +3,7 @@
 import { createClient } from "@/auth/server";
 import { prisma } from "@/db/prisma";
 import { handleError } from "@/lib/utils";
-import { withRetry } from "@/lib/withRetry";
+// import { withRetry } from "@/lib/withRetry";
 
 export const loginAction = async (email: string, password: string) => {
   try {
