@@ -3,11 +3,12 @@ import { JournalEntryEditForm } from "@/components/JournalEntryEditForm";
 import { redirect } from "next/navigation";
 import { getUser } from "@/auth/server";
 
-interface PageProps {
+// Remove the custom interface and use a more direct approach
+export default async function EditJournalEntryPage({
+  params,
+}: {
   params: { id: string };
-}
-
-export default async function EditJournalEntryPage({ params }: PageProps) {
+}) {
   const user = await getUser();
   if (!user) {
     redirect("/login");
@@ -16,7 +17,7 @@ export default async function EditJournalEntryPage({ params }: PageProps) {
   const entry = await prisma.journalEntry.findUnique({
     where: {
       id: params.id,
-      userId: user.id, // Ensure the entry belongs to the logged-in user
+      userId: user.id,
     },
     include: {
       categories: {
