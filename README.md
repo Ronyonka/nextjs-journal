@@ -1,6 +1,8 @@
-# Next.js Journal
+# Free Mind Journal
 
 A journaling application built with Next.js, Prisma, and Supabase. This app allows users to create, edit, and manage journal entries with a clean and responsive UI.
+
+Try it out here: [Free Mind Journal](https://nextjs-journal-sepia.vercel.app/)
 
 ## Key Features
 
