@@ -42,8 +42,6 @@ Install the required dependencies using npm or yarn:
 
 ```bash
 npm install
-# or
-yarn install
 ```
 
 ### 3. Configure Supabase
@@ -56,11 +54,12 @@ yarn install
 
 Create a .env.local file in the root of the project and add the following environment variables:
 
-```
+```bash
 DATABASE_URL=your_postgresql_database_url
 DIRECT_URL=your_postgresql_direct_url
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+NEXT_PUBLIC_SITE_URL=http://localhost:3000 #Make sure it matches the URL in your supabase URL Configuration
 ```
 
 Replace the placeholders with your actual credentials:
@@ -88,7 +87,7 @@ npx prisma generate
 4. Apply the database migrations:
 
 ```bash
-npx prisma migrate dev
+npm run migrate
 ```
 
 ### 6. Run the Development Server
